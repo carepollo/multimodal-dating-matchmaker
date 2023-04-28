@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/carepollo/multimodal-dating-matchmaker/api"
+	"github.com/carepollo/multimodal-dating-matchmaker/models"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 
@@ -13,34 +14,31 @@ import (
 	"github.com/joho/godotenv"
 )
 
-var (
-	dbClient *mongo.Client
-	ctx      = context.TODO()
-)
-
-func newRouter() *fiber.App {
-	app := fiber.New()
-	api.RegisterEndpoints(app)
-
-	return app
-}
-
 func Run() {
-	defer dbClient.Disconnect(ctx)
+	server := models.App{
+		Context: context.TODO(),
+		Router:  fiber.New(),
+	}
 
+	defer server.DB.Disconnect(server.Context)
+
+	//loading environment variables
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatal("failed to load .env file")
 	}
 
+	//connecting to database
 	connectOptions := options.Client().ApplyURI(os.Getenv("DB_STRING_CONNECTION"))
-	dbClient, err = mongo.Connect(
-		ctx,
+	server.DB, err = mongo.Connect(
+		server.Context,
 		connectOptions,
 	)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
 
-	newRouter().Listen(":8080")
+	//starting web server
+	api.RegisterEndpoints(server.Router)
+	server.Router.Listen(":8080")
 }

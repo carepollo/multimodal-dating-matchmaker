@@ -8,8 +8,7 @@ import (
 )
 
 type App struct {
-	DB          *mongo.Database
-	Ctx         context.Context
-	Router      *fiber.App
-	Environment Environment
+	DB      *mongo.Client   // connection instance of mongodb
+	Context context.Context //context required for the DB
+	Router  *fiber.App
 }
