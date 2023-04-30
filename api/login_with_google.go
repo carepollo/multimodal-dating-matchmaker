@@ -1,8 +1,8 @@
-package controllers
+package api
 
 import "github.com/gofiber/fiber/v2"
 
-func LoginWithGoogle(ctx *fiber.Ctx) error {
+func (api *API) LoginWithGoogle(ctx *fiber.Ctx) error {
 	ctx.SendString("lol")
 	return nil
 }

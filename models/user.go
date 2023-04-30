@@ -23,7 +23,7 @@ type User struct {
 	Height       float32         `json:"heigth"`
 	Religion     string          `json:"religion"`
 	Work         []LifeRecord    `json:"work"`
-	AboutMe      string          `json:"aboutMe"` // is the self description of the user
-	Likes        map[string]bool `json:"likes"`   // topics that the user likes/dislikes
-	Spectrum     interface{}     `json:"spectrum"`
+	AboutMe      string          `json:"aboutMe"`  // is the self description of the user
+	Likes        map[string]bool `json:"likes"`    // topics that the user likes/dislikes
+	Spectrum     interface{}     `json:"spectrum"` // filters defined for profile search
 }

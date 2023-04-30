@@ -1,8 +1,8 @@
-package controllers
+package api
 
 import "github.com/gofiber/fiber/v2"
 
-func RegisterWithFacebook(ctx *fiber.Ctx) error {
+func (api *API) RegisterWithGoogle(ctx *fiber.Ctx) error {
 	ctx.SendString("lol")
 	return nil
 }
