@@ -1,7 +1,6 @@
 package app
 
 import (
-	"log"
 	"os"
 
 	"github.com/carepollo/multimodal-dating-matchmaker/api"
@@ -27,6 +26,6 @@ func Run() {
 	api.RegisterEndpoints(server)
 	err = server.Router.Listen(":8080")
 	if err != nil {
-		log.Fatal(err.Error())
+		panic(err.Error())
 	}
 }

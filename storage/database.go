@@ -6,6 +6,7 @@ import (
 	"context"
 	"fmt"
 
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -46,8 +47,8 @@ func (db *Database) Disconnect() {
 }
 
 // generic implementation to make cleaner the insert process
-func (db *Database) insert(body interface{}, collectionTarget string) error {
-	collection := db.database.Collection(collectionTarget)
+func (db *Database) insert(collectionName string, body interface{}) error {
+	collection := db.database.Collection(collectionName)
 	_, err := collection.InsertOne(db.context, body)
 	if err != nil {
 		return err
@@ -55,6 +56,56 @@ func (db *Database) insert(body interface{}, collectionTarget string) error {
 	return nil
 }
 
-// func (db *Database) get()
-// func (db *Database) getById()
-// func (db *Database) delete() error
+// this method is to get data from any collection given, to use must cast the value into the desired
+func (db *Database) get(collectionName string, query bson.M) ([]interface{}, error) {
+	result := []interface{}{}
+	collection := db.database.Collection(collectionName)
+	cursor, err := collection.Find(db.context, query)
+
+	if err != nil {
+		return nil, err
+	}
+
+	for cursor.Next(db.context) {
+		var record interface{}
+		err = cursor.Decode(&record)
+		if err != nil {
+			return nil, err
+		}
+
+		result = append(result, record)
+	}
+
+	if err = cursor.Err(); err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+// method to get a single value, search by id and returns nil if not found.
+// Check for error when using it
+func (db *Database) getById(collectionName string, id string) (interface{}, error) {
+	var result interface{}
+	collection := db.database.Collection(collectionName)
+	query := bson.M{"_id": id}
+
+	err := collection.FindOne(db.context, query).Decode(&result)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+func (db *Database) updateById(collectionName string, id string) error {
+	collection := db.database.Collection(collectionName)
+	_, err := collection.UpdateByID(db.context, bson.M{"_id": id}, nil)
+	return err
+}
+
+func (db *Database) deleteById(collectionName string, id string) error {
+	collection := db.database.Collection(collectionName)
+	_, err := collection.DeleteOne(db.context, bson.M{"_id": id})
+	return err
+}

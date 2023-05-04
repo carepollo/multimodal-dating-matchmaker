@@ -20,6 +20,11 @@ func (api *API) RegisterWithEmail(ctx *fiber.Ctx) error {
 		return err
 	}
 
+	if err := api.DB.CreateUser(*body); err != nil {
+		ctx.SendStatus(http.StatusInternalServerError)
+		return err
+	}
+
 	ctx.JSON(body)
 	return nil
 }
