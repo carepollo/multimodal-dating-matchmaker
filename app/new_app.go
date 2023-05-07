@@ -20,7 +20,7 @@ func Run() {
 	}
 
 	//connecting to database
-	server.DB.Connect(os.Getenv("DB_STRING_CONNECTION"))
+	server.DB.Connect(os.Getenv("MONGODB_CONNECTION"))
 
 	//starting web server
 	api.RegisterEndpoints(server)

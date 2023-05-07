@@ -2,7 +2,7 @@ package api
 
 import "github.com/gofiber/fiber/v2"
 
-func (api *API) LoginWithGoogle(ctx *fiber.Ctx) error {
+func (api *API) loginWithGoogle(ctx *fiber.Ctx) error {
 	ctx.SendString("lol")
 	return nil
 }

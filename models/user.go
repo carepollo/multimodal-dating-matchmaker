@@ -25,11 +25,13 @@ type User struct {
 	Age            int8            `json:"age"`            // age of user
 	InterestedIn   []string        `json:"interestedIn"`   // gender that is looking for
 	Relationship   []string        `json:"relationship"`   // type of relationship
-	Education      []LifeRecord    `json:"education"`
-	Location       Location        `json:"location"`
+	Pictures       []string        `json:"pictures"`       // user pictures associated to profile, stores the file url
+	LastLocation   Location        `json:"lastLocation"`   // location of the last login
+	Phone          string          `json:"phone"`          // phone number of user, must be unique in db, it should be an optional field
 	Weight         float32         `json:"weight"`
 	Height         float32         `json:"heigth"`
 	Religion       string          `json:"religion"`
+	Education      []LifeRecord    `json:"education"`
 	Work           []LifeRecord    `json:"work"`
 	AboutMe        string          `json:"aboutMe"`  // is the self description of the user
 	Likes          map[string]bool `json:"likes"`    // topics that the user likes/dislikes

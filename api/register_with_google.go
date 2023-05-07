@@ -1,8 +1,20 @@
 package api
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"fmt"
 
-func (api *API) RegisterWithGoogle(ctx *fiber.Ctx) error {
-	ctx.SendString("lol")
+	"github.com/carepollo/multimodal-dating-matchmaker/util"
+	"github.com/gofiber/fiber/v2"
+)
+
+func (api *API) registerWithGoogle(ctx *fiber.Ctx) error {
+	state := fmt.Sprintf("%v", util.RandomInt(100))
+	url := api.googleOauthConfig.AuthCodeURL(state)
+	ctx.Redirect(url, fiber.StatusTemporaryRedirect)
+	return nil
+}
+
+func (api *API) callbackRegisterWithGoogle(ctx *fiber.Ctx) error {
+
 	return nil
 }

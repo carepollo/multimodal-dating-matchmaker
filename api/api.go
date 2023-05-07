@@ -3,25 +3,27 @@
 package api
 
 import (
-	"context"
-
 	"github.com/carepollo/multimodal-dating-matchmaker/storage"
+	"github.com/carepollo/multimodal-dating-matchmaker/util"
 	"github.com/gofiber/fiber/v2"
+	"golang.org/x/oauth2"
 )
 
 // an entity to group the data that is going to shared across the API
 type API struct {
-	DB      *storage.Database // connection instance of mongodb
-	Context context.Context   // context required for the DB
-	Router  *fiber.App        // the endpoints and web server
+	DB                *storage.Database // connection instance of mongodb
+	Router            *fiber.App        // the endpoints and web server
+	googleOauthConfig *oauth2.Config    // google object to authentication
+	Cache             *storage.Cache    // cache database
 }
 
 // create a new instance of API
 func New() *API {
 	return &API{
-		Context: context.TODO(),
-		Router:  fiber.New(),
-		DB:      storage.NewMongoDB(),
+		Router:            fiber.New(),
+		DB:                storage.NewMongoDB(),
+		googleOauthConfig: util.SetupGoogleConfig(),
+		Cache:             storage.NewRedis(),
 	}
 }
 
@@ -30,12 +32,13 @@ func RegisterEndpoints(app *API) {
 	router := app.Router
 
 	auth := router.Group("/auth")
-	auth.Post("/login-email", app.LoginWithEmail)
-	auth.Post("/login-google", app.LoginWithGoogle)
-	auth.Post("/login-facebook", app.LoginWithFacebook)
-	auth.Post("/register-email", app.RegisterWithEmail)
-	auth.Post("/register-google", app.RegisterWithGoogle)
-	auth.Post("/register-facebook", app.RegisterWithFacebook)
+	auth.Post("/login-email", app.loginWithEmail)
+	auth.Post("/login-google", app.loginWithGoogle)
+	auth.Post("/login-facebook", app.loginWithFacebook)
+	auth.Post("/register-email", app.registerWithEmail)
+	auth.Post("/register-google", app.registerWithGoogle)
+	auth.Post("/google-callback", app.callbackRegisterWithGoogle) // redirect for google authentication
+	auth.Post("/register-facebook", app.registerWithFacebook)
 
 	// user := router.Group("/user")
 }
