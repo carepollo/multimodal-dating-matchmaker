@@ -11,6 +11,7 @@ import (
 var server = api.New()
 
 func Run() {
+	defer server.Cache.Disconnect()
 	defer server.DB.Disconnect()
 
 	//loading environment variables

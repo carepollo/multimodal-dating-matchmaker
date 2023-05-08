@@ -28,12 +28,12 @@ type User struct {
 	Pictures       []string        `json:"pictures"`       // user pictures associated to profile, stores the file url
 	LastLocation   Location        `json:"lastLocation"`   // location of the last login
 	Phone          string          `json:"phone"`          // phone number of user, must be unique in db, it should be an optional field
-	Weight         float32         `json:"weight"`
-	Height         float32         `json:"heigth"`
-	Religion       string          `json:"religion"`
-	Education      []LifeRecord    `json:"education"`
-	Work           []LifeRecord    `json:"work"`
-	AboutMe        string          `json:"aboutMe"`  // is the self description of the user
-	Likes          map[string]bool `json:"likes"`    // topics that the user likes/dislikes
-	Spectrum       interface{}     `json:"spectrum"` // filters defined for profile search
+	Weight         float32         `json:"weight"`         // weight of person
+	Height         float32         `json:"heigth"`         // height of person
+	Religion       string          `json:"religion"`       // religion of person
+	Education      []LifeRecord    `json:"education"`      // degrees, educational background, etc
+	Work           []LifeRecord    `json:"work"`           // where has he worked at
+	AboutMe        string          `json:"aboutMe"`        // is the self description of the user
+	Likes          map[string]bool `json:"likes"`          // topics that the user likes/dislikes
+	Spectrum       interface{}     `json:"spectrum"`       // filters defined for profile search
 }
