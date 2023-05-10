@@ -22,14 +22,3 @@ func New() *API {
 		Cache:  storage.NewRedis(),
 	}
 }
-
-// add all of the endpoints and append the handlers to the fiber router
-func RegisterEndpoints(app *API) {
-	router := app.Router
-
-	auth := router.Group("/auth")
-	auth.Post("/login", app.loginWithEmail)
-	auth.Post("/register", app.registerWithEmail)
-
-	// user := router.Group("/user")
-}

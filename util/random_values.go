@@ -4,7 +4,14 @@ import (
 	"math/rand"
 	"strings"
 	"time"
+	"unicode"
 )
+
+// generates a random integer number
+func RandomInt(max int) int {
+	rand.NewSource(time.Now().UnixNano())
+	return rand.Intn(max)
+}
 
 // generates a random password of 8 characters long with random uppercase and lowercase letter
 // and random numbers
@@ -32,7 +39,8 @@ func GeneratePassword() string {
 
 	index = RandomInt(len(result) - 1)
 	for !turned {
-		if !IsNumeric(string(result[index])) {
+		isNumeric := unicode.IsDigit(rune(result[index]))
+		if !isNumeric {
 			upperized := strings.ToUpper(string(result[index]))
 			result = strings.Replace(result, string(result[index]), upperized, 1)
 			turned = true
@@ -41,10 +49,4 @@ func GeneratePassword() string {
 	}
 
 	return result
-}
-
-// generates a random integer number
-func RandomInt(max int) int {
-	rand.NewSource(time.Now().UnixNano())
-	return rand.Intn(max)
 }

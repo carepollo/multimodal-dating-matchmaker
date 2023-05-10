@@ -13,40 +13,36 @@ import (
 func (api *API) loginWithEmail(ctx *fiber.Ctx) error {
 	body := new(models.User)
 	if err := ctx.BodyParser(body); err != nil {
-		ctx.SendStatus(fiber.ErrBadRequest.Code)
-		return nil
+		return fiber.NewError(fiber.ErrBadRequest.Code, "object doesn't have required properties")
 	}
 
 	// search user on DB to check for exitance
 	user, err := api.DB.GetUserByEmail(body.Email)
 	if err != nil {
-		ctx.SendStatus(fiber.ErrNotFound.Code)
-		return nil
+		return fiber.NewError(fiber.ErrNotFound.Code, "user not registered")
 	}
 
 	// check given password if it is correct
 	password := []byte(body.Password)
 	passwordMatch := util.ComparePasswords(user.Password, password)
 	if !passwordMatch {
-		ctx.SendStatus(fiber.ErrNotFound.Code)
-		return nil
+		return fiber.NewError(fiber.ErrNotFound.Code, "user not registered")
 	}
 
-	// search user on
+	// create token for user access
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"id": user.ID,
 	})
-	token.Claims.GetExpirationTime()
-	value, err := token.SignedString(os.Getenv("JWT_KEY"))
+	key := os.Getenv("JWT_KEY")
+	value, err := token.SignedString(key)
 	if err != nil {
-		ctx.SendStatus(fiber.ErrInternalServerError.Code)
-		return nil
+		return fiber.NewError(fiber.ErrInternalServerError.Code, "couldn't generate token")
 	}
 
-	ctx.JSON(struct {
-		token string
+	result := struct {
+		Token string `json:"token"`
 	}{
-		token: value,
-	})
-	return nil
+		Token: value,
+	}
+	return ctx.JSON(result)
 }

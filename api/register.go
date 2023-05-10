@@ -16,33 +16,28 @@ func (api *API) registerWithEmail(ctx *fiber.Ctx) error {
 
 	// check that email and password are not empty fields
 	if util.ValidateEmail(body.Email) || util.ValidatePassword(body.Password) {
-		ctx.SendStatus(fiber.ErrBadRequest.Code)
-		return nil
+		return fiber.NewError(fiber.ErrBadRequest.Code, "email or password doesn't match the requirements")
 	}
 
 	// check that user doesn't exist already in database
 	_, err := api.DB.GetUserByEmail(body.Email)
 	if err == nil {
-		ctx.SendStatus(fiber.ErrNotAcceptable.Code)
-		return nil
+		return fiber.NewError(fiber.ErrNotAcceptable.Code, "this email is already registered")
 	}
 
 	// hash password
 	body.Password = util.HashAndSalt(body.Password)
 	if err := api.DB.CreateUser(*body); err != nil {
-		ctx.SendStatus(fiber.ErrBadRequest.Code)
-		return nil
+		return fiber.NewError(fiber.ErrBadRequest.Code, "couldn't encrypt password")
 	}
 
 	// create user on DB
 	body.Status = "Pending"
 	if err := api.DB.CreateUser(*body); err != nil {
-		ctx.SendStatus(fiber.ErrInternalServerError.Code)
-		return nil
+		return fiber.NewError(fiber.ErrInternalServerError.Code, "couldn't create user")
 	}
 
 	//TODO: send email to such email to validate address
 
-	ctx.SendStatus(fiber.StatusOK)
-	return nil
+	return ctx.SendStatus(fiber.StatusOK)
 }
