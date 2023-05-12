@@ -7,23 +7,24 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
+// searchs on database users with such email and returns only the first one found
+// as the email is supposed to be a unique value in database
 func (db *Database) GetUserByEmail(email string) (*models.User, error) {
 	query := bson.M{
 		"email": email,
 	}
-	results, err := db.get("users", query)
+
+	// execute the query
+	results, err := get[models.User](db, "users", query)
 	if err != nil {
 		return nil, err
 	}
 
+	// check if there are results
 	if len(results) < 1 {
 		return nil, errors.New("not found")
 	}
 
-	user, ok := results[0].(models.User)
-	if !ok {
-		return nil, err
-	}
-
+	user := results[0]
 	return &user, nil
 }

@@ -25,7 +25,7 @@ func NewRedis() *Cache {
 		}),
 		context: context.TODO(),
 	}
-	fmt.Println("Connected to cache succesfully")
+	fmt.Println("Connected to cache successfully")
 	return cache
 }
 

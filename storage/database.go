@@ -38,7 +38,7 @@ func (db *Database) Connect(connectionString string) {
 	}
 
 	db.database = db.client.Database("multimodal-dating-matchmaker")
-	fmt.Println("Connected to database succesfully")
+	fmt.Println("Connected to database successfully")
 }
 
 // disconnect from the database
@@ -50,15 +50,12 @@ func (db *Database) Disconnect() {
 func (db *Database) insert(collectionName string, body interface{}) error {
 	collection := db.database.Collection(collectionName)
 	_, err := collection.InsertOne(db.context, body)
-	if err != nil {
-		return err
-	}
-	return nil
+	return err
 }
 
 // this method is to get data from any collection given, to use must cast the value into the desired
-func (db *Database) get(collectionName string, query bson.M) ([]interface{}, error) {
-	result := []interface{}{}
+func get[T any](db *Database, collectionName string, query bson.M) ([]T, error) {
+	result := []T{}
 	collection := db.database.Collection(collectionName)
 	cursor, err := collection.Find(db.context, query)
 
@@ -67,7 +64,7 @@ func (db *Database) get(collectionName string, query bson.M) ([]interface{}, err
 	}
 
 	for cursor.Next(db.context) {
-		var record interface{}
+		var record T
 		err = cursor.Decode(&record)
 		if err != nil {
 			return nil, err
@@ -85,26 +82,28 @@ func (db *Database) get(collectionName string, query bson.M) ([]interface{}, err
 
 // method to get a single value, search by id and returns nil if not found.
 // Check for error when using it
-func (db *Database) getById(collectionName string, id string) (interface{}, error) {
-	var result interface{}
+func getById[T any](db *Database, collectionName string, id string) (T, error) {
+	var result T
 	collection := db.database.Collection(collectionName)
 	query := bson.M{"_id": id}
 
+	// if error arises return empty value of such type
 	err := collection.FindOne(db.context, query).Decode(&result)
 	if err != nil {
-		return nil, err
+		var empty T
+		return empty, err
 	}
 
 	return result, nil
 }
 
-func (db *Database) updateById(collectionName string, id string) error {
+func updateById(db *Database, collectionName string, id string) error {
 	collection := db.database.Collection(collectionName)
 	_, err := collection.UpdateByID(db.context, bson.M{"_id": id}, nil)
 	return err
 }
 
-func (db *Database) deleteById(collectionName string, id string) error {
+func deleteById(db *Database, collectionName string, id string) error {
 	collection := db.database.Collection(collectionName)
 	_, err := collection.DeleteOne(db.context, bson.M{"_id": id})
 	return err

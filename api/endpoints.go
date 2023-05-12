@@ -12,5 +12,5 @@ func RegisterEndpoints(app *API) {
 	auth.Post("/register", app.registerWithEmail)
 
 	user := router.Group("/user")
-	user.Use(middlewares.IsLogged).Get("/profile", app.getUserData)
+	user.Use(middlewares.IsLogged).Get("/profile/:id", app.getUserData)
 }

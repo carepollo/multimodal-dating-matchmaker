@@ -8,5 +8,5 @@ import (
 
 func Logger(ctx *fiber.Ctx) error {
 	log.Printf("%s - %s", ctx.Method(), ctx.Path())
-	return nil
+	return ctx.Next()
 }

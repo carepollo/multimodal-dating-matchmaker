@@ -12,12 +12,9 @@ type LifeRecord struct {
 
 // this is the represetantion of user within the system
 type User struct {
-	ID             string          `json:"id"`             // ObjectID of mongodb
+	ID             string          `json:"_id"`            // ObjectID of mongodb
 	Name           string          `json:"name"`           // name to display
-	TypeName       string          `json:"typename"`       // alias or real name
-	AccountType    string          `json:"accountType"`    // which method used to create account: google, facebook, email/password
-	Username       string          `json:"username"`       // codename for user when created by other methods
-	Status         string          `json:"status"`         // status of account, if is just created, verified, deactivated, banned, etc.
+	Status         string          `json:"status"`         // status of account: pending verification, verified, deactivated, banned, etc
 	LastConnection time.Time       `json:"lastConnection"` // last time saw a message
 	Tags           map[string]bool `json:"tags"`           // tags associated to user to cluster it or clasify it
 	Email          string          `json:"email"`          // registered email

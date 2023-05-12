@@ -2,6 +2,7 @@ package api
 
 import (
 	"os"
+	"time"
 
 	"github.com/carepollo/multimodal-dating-matchmaker/models"
 	"github.com/carepollo/multimodal-dating-matchmaker/util"
@@ -16,7 +17,7 @@ func (api *API) loginWithEmail(ctx *fiber.Ctx) error {
 		return fiber.NewError(fiber.ErrBadRequest.Code, "object doesn't have required properties")
 	}
 
-	// search user on DB to check for exitance
+	// search user on DB to check for existance
 	user, err := api.DB.GetUserByEmail(body.Email)
 	if err != nil {
 		return fiber.NewError(fiber.ErrNotFound.Code, "user not registered")
@@ -29,19 +30,23 @@ func (api *API) loginWithEmail(ctx *fiber.Ctx) error {
 		return fiber.NewError(fiber.ErrNotFound.Code, "user not registered")
 	}
 
-	// create token for user access
+	// create token for user access, should expire within 14 days
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"id": user.ID,
+		"id":  user.ID,
+		"exp": time.Now().Add(time.Hour * 24 * 14).Unix(),
 	})
-	key := os.Getenv("JWT_KEY")
+	key := []byte(os.Getenv("JWT_KEY"))
 	value, err := token.SignedString(key)
 	if err != nil {
-		return fiber.NewError(fiber.ErrInternalServerError.Code, "couldn't generate token")
+		return fiber.NewError(fiber.ErrInternalServerError.Code, "couldn't generate token: "+err.Error())
 	}
 
+	// return user id and generated token
 	result := struct {
+		Id    string `json:"id"`
 		Token string `json:"token"`
 	}{
+		Id:    user.ID,
 		Token: value,
 	}
 	return ctx.JSON(result)
