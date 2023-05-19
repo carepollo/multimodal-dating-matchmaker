@@ -21,7 +21,7 @@ func (db *Database) GetUserByEmail(email string) (*models.User, error) {
 	}
 
 	// check if there are results
-	if len(results) < 1 {
+	if len(results) == 0 {
 		return nil, errors.New("not found")
 	}
 

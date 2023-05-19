@@ -10,8 +10,9 @@ import (
 // the structure of the User object.
 func (api *API) registerWithEmail(ctx *fiber.Ctx) error {
 	body := new(models.User)
+
 	if err := ctx.BodyParser(body); err != nil {
-		return err
+		return fiber.NewError(fiber.StatusBadRequest, "the received object doesn't match the required fields")
 	}
 
 	// check that email and password are not empty fields
@@ -20,14 +21,14 @@ func (api *API) registerWithEmail(ctx *fiber.Ctx) error {
 	}
 
 	// check that user doesn't exist already in database
-	exists, err := api.DB.GetUserByEmail(body.Email)
-	if err == nil || exists != nil {
+	exists, _ := api.DB.GetUserByEmail(body.Email)
+	if exists != nil {
 		return fiber.NewError(fiber.ErrNotAcceptable.Code, "this email is already registered")
 	}
 
 	// hash password and create user on DB
 	body.Password = util.HashAndSalt(body.Password)
-	body.Status = "Pending"
+	body.Status = models.PENDING
 	if err := api.DB.CreateUser(*body); err != nil {
 		return fiber.NewError(fiber.ErrBadRequest.Code, "couldn't create user")
 	}

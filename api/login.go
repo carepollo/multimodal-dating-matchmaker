@@ -20,14 +20,19 @@ func (api *API) loginWithEmail(ctx *fiber.Ctx) error {
 	// search user on DB to check for existance
 	user, err := api.DB.GetUserByEmail(body.Email)
 	if err != nil {
-		return fiber.NewError(fiber.ErrNotFound.Code, "user not registered")
+		return fiber.NewError(fiber.ErrNotFound.Code, "user not found")
+	}
+
+	// check that user has confirmed the email address
+	if user.Status == models.PENDING {
+		return fiber.NewError(fiber.StatusForbidden, "account not confirmed")
 	}
 
 	// check given password if it is correct
 	password := []byte(body.Password)
 	passwordMatch := util.ComparePasswords(user.Password, password)
 	if !passwordMatch {
-		return fiber.NewError(fiber.ErrNotFound.Code, "user not registered")
+		return fiber.NewError(fiber.ErrNotFound.Code, "user not found")
 	}
 
 	// create token for user access, should expire within 14 days
@@ -42,12 +47,8 @@ func (api *API) loginWithEmail(ctx *fiber.Ctx) error {
 	}
 
 	// return user id and generated token
-	result := struct {
-		Id    string `json:"id"`
-		Token string `json:"token"`
-	}{
-		Id:    user.ID,
-		Token: value,
-	}
-	return ctx.JSON(result)
+	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
+		"token": value,
+		"id":    user.ID,
+	})
 }
