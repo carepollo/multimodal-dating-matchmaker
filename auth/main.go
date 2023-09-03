@@ -15,11 +15,9 @@ func main() {
 	logger := log.New(os.Stdout, "auth", log.LstdFlags)
 	mux := http.NewServeMux()
 
-	ping := handlers.NewPing(logger)
-	login := handlers.NewLogin(logger)
+	products := handlers.NewProducts(logger)
 
-	mux.Handle("/", ping)
-	mux.Handle("/login", login)
+	mux.Handle("/", products)
 
 	server := http.Server{
 		Addr:         ":9090",
