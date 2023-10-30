@@ -2,44 +2,63 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
-	"net/http"
-	"os"
-	"os/signal"
-	"time"
 
+	"github.com/dgraph-io/dgo/v200"
+	"github.com/dgraph-io/dgo/v200/protos/api"
+	"google.golang.org/grpc"
+
+	"github.com/carepollo/multimodal-dating-matchmaker/auth/db"
 	"github.com/carepollo/multimodal-dating-matchmaker/auth/handlers"
+	"github.com/gofiber/fiber/v2"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func main() {
-	logger := log.New(os.Stdout, "auth", log.LstdFlags)
-	mux := http.NewServeMux()
+func createDgraphClient() (*dgo.Dgraph, error) {
+	conn, err := grpc.Dial("localhost:9121", grpc.WithInsecure())
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println("Connected to DGraph!")
 
-	products := handlers.NewProducts(logger)
+	return dgo.NewDgraphClient(
+		api.NewDgraphClient(conn),
+	), nil
+}
 
-	mux.Handle("/", products)
-
-	server := http.Server{
-		Addr:         ":9090",
-		Handler:      mux,
-		IdleTimeout:  120 * time.Second,
-		ReadTimeout:  1 * time.Second,
-		WriteTimeout: 1 * time.Second,
+func createMongoClient() (*mongo.Client, error) {
+	clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
+	client, err := mongo.Connect(context.TODO(), clientOptions)
+	if err != nil {
+		return nil, err
 	}
 
-	go func() {
-		if err := server.ListenAndServe(); err != nil {
-			logger.Fatal(err)
-		}
-	}()
+	err = client.Ping(context.TODO(), nil)
+	if err != nil {
+		return nil, err
+	}
 
-	channel := make(chan os.Signal, 1)
-	signal.Notify(channel, os.Interrupt)
-	signal.Notify(channel, os.Kill)
+	fmt.Println("Connected to MongoDB!")
+	return client, nil
+}
 
-	sig := <-channel
-	log.Println("Graceful shutdown:", sig)
+func main() {
+	app := fiber.New()
 
-	timeout, _ := context.WithTimeout(context.Background(), 30*time.Second)
-	server.Shutdown(timeout)
+	client, err := createDgraphClient()
+	if err != nil {
+		log.Fatal(err)
+	}
+	db.Users = client
+
+	otherclient, err := createMongoClient()
+	if err != nil {
+		log.Fatal(err)
+	}
+	db.Platform = otherclient
+
+	app.Post("/register", handlers.HandleCreateUser)
+	app.Listen(":3000")
 }
