@@ -1,0 +1,64 @@
+syntax="proto3";
+
+option go_package="github.com/carepollo/multimodal-dating-matchmaker/auth/protos";
+
+message User {
+    string id = 1;
+    string name = 2;
+    string lastname = 3;
+    string phonenumber= 4;
+    string status = 5;
+    string lastConnection = 6;
+    string email = 7;
+    string password = 8;
+    int32 age = 9;
+    float height = 10;
+    float weight = 11;
+    string religion = 12;
+    int64 score = 13;
+    string aboutMe = 14;
+    Gender gender = 15;
+    repeated Relationship relatioship = 16;
+    Location location = 17;
+    repeated Work work = 18;
+    repeated Education education = 19;
+    
+}
+
+message Gender {
+    string id = 1;
+    string name = 2;
+}
+
+message Relationship {
+    string id = 1;
+    string name = 2;
+}
+
+message Education {
+    string id = 1;
+    string site = 2;
+    string programType = 3;
+    string programName = 4;
+}
+
+message Work {
+    string id = 1;
+    string site = 2;
+    string role = 3;
+}
+
+message Location {
+    string id = 1;
+    string city = 2;
+    string country = 3;
+    float longitude = 4;
+    float latitude = 5;
+}
+
+message Thing {
+    string id = 1;
+    string whatItIs = 2;
+    string nameOfIt = 3;
+}
+
