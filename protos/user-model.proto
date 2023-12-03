@@ -6,7 +6,7 @@ message User {
     string id = 1;
     string name = 2;
     string lastname = 3;
-    string phonenumber= 4;
+    string phoneNumber = 4;
     string status = 5;
     string lastConnection = 6;
     string email = 7;
@@ -18,7 +18,7 @@ message User {
     int64 score = 13;
     string aboutMe = 14;
     Gender gender = 15;
-    repeated Relationship relatioship = 16;
+    repeated Relationship relationship = 16;
     Location location = 17;
     repeated Work work = 18;
     repeated Education education = 19;
