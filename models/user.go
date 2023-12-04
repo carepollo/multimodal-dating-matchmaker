@@ -4,19 +4,19 @@ import "time"
 
 // Gender represents the Gender message.
 type Gender struct {
-	ID   string
+	Id   string
 	Name string
 }
 
 // Relationship represents the Relationship message.
 type Relationship struct {
-	ID   string
+	Id   string
 	Name string
 }
 
 // Education represents the Education message.
 type Education struct {
-	ID          string
+	Id          string
 	Site        string
 	ProgramType string
 	ProgramName string
@@ -24,14 +24,14 @@ type Education struct {
 
 // Work represents the Work message.
 type Work struct {
-	ID   string
+	Id   string
 	Site string
 	Role string
 }
 
 // Location represents the Location message.
 type Location struct {
-	ID        string
+	Id        string
 	City      string
 	Country   string
 	Longitude float32
@@ -40,18 +40,18 @@ type Location struct {
 
 // Thing represents the Thing message.
 type Thing struct {
-	ID       string
+	Id       string
 	WhatItIs string
 	NameOfIt string
 }
 
 // User represents the User message.
 type User struct {
-	ID             string
+	Id             string
 	Name           string
 	Lastname       string
 	PhoneNumber    string
-	Status         string
+	Status         string // 'pending', 'verified', 'deactivated'
 	Email          string
 	Password       string
 	AboutMe        string

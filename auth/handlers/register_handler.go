@@ -7,10 +7,11 @@ import (
 
 	"github.com/carepollo/multimodal-dating-matchmaker/auth/helpers"
 	"github.com/carepollo/multimodal-dating-matchmaker/auth/protos"
+	"github.com/google/uuid"
 )
 
 func (s *AuthService) Register(ctx context.Context, req *protos.RegisterRequest) (*protos.RegisterResponse, error) {
-	log.Println("regsiter request logged")
+	log.Println("register request incoming: ", req.String())
 
 	// validate incoming data
 	if !helpers.ValidateEmail(req.Email) {
@@ -21,10 +22,27 @@ func (s *AuthService) Register(ctx context.Context, req *protos.RegisterRequest)
 		return nil, errors.New("password doesn't comply with minimum security requirements")
 	}
 
-	// create user in db
+	hashedPassword, err := helpers.HashAndSalt(req.Password)
+	if err != nil {
+		return nil, errors.New("could not hash password: " + err.Error())
+	}
 
-	// create associated stuff in other db
+	data := map[string]any{
+		"id":       uuid.New().String(),
+		"email":    req.Email,
+		"password": hashedPassword,
+		"age":      18,
+		"status":   "pending",
+		"name":     req.Name,
+	}
+
+	// create user in db
+	// if err := helpers.CreateUser(s.Ctx, s.GetGraphDB(), data); err != nil {
+	// 	return nil, errors.New("could not create user on db: " + err.Error())
+	// }
 
 	// send confirmation email
+
+	log.Println("register response outbound", data)
 	return &protos.RegisterResponse{}, nil
 }

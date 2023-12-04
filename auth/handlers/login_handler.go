@@ -13,6 +13,6 @@ func (s *AuthService) Login(ctx context.Context, req *protos.LoginRequest) (*pro
 		Token:  "",
 	}
 
-	fmt.Printf("the payload is: %T -  %v \n", req, req)
+	fmt.Printf("login")
 	return res, nil
 }
