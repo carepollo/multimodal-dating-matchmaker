@@ -1,0 +1,15 @@
+syntax="proto3";
+
+option go_package="github.com/carepollo/multimodal-dating-matchmaker/protos";
+
+service NotificationsService {
+    rpc NotifyByEmail(NotifyEmailRequest) returns (NotifyEmailResponse) {};
+}
+
+message NotifyEmailRequest {
+    repeated string to = 1;
+    string message = 2;
+    string topic = 3;
+}
+
+message NotifyEmailResponse {}

@@ -1,6 +1,6 @@
 syntax="proto3";
 
-option go_package="github.com/carepollo/multimodal-dating-matchmaker/auth/protos";
+option go_package="github.com/carepollo/multimodal-dating-matchmaker/protos";
 
 service AuthService {
     rpc Login(LoginRequest) returns (LoginResponse) {};

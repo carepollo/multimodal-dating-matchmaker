@@ -4,7 +4,7 @@ import (
 	"context"
 	"log"
 
-	"github.com/carepollo/multimodal-dating-matchmaker/auth/protos"
+	"github.com/carepollo/multimodal-dating-matchmaker/protos"
 	"github.com/neo4j/neo4j-go-driver/v5/neo4j"
 	"go.mongodb.org/mongo-driver/mongo"
 )
