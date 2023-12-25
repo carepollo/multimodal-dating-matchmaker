@@ -2,3 +2,4 @@
 .idea
 .air.toml
 /tmp
+*/.env

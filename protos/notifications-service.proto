@@ -12,4 +12,6 @@ message NotifyEmailRequest {
     string topic = 3;
 }
 
-message NotifyEmailResponse {}
+message NotifyEmailResponse {
+    string message = 1;
+}

@@ -1,10 +1,10 @@
-package handlers
+package implementation
 
 import (
 	"context"
 	"fmt"
 
-	"github.com/carepollo/multimodal-dating-matchmaker/auth/protos"
+	"github.com/carepollo/multimodal-dating-matchmaker/protos"
 )
 
 func (s *AuthService) Login(ctx context.Context, req *protos.LoginRequest) (*protos.LoginResponse, error) {

@@ -9,9 +9,9 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/carepollo/multimodal-dating-matchmaker/auth/handlers"
-	"github.com/carepollo/multimodal-dating-matchmaker/auth/protos"
-	"github.com/carepollo/multimodal-dating-matchmaker/models"
+	"github.com/carepollo/multimodal-dating-matchmaker/auth/implementation"
+	"github.com/carepollo/multimodal-dating-matchmaker/auth/models"
+	"github.com/carepollo/multimodal-dating-matchmaker/protos"
 	"github.com/neo4j/neo4j-go-driver/v5/neo4j"
 	"github.com/spf13/viper"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -38,7 +38,7 @@ func setUpEnvironment() models.Environment {
 }
 
 func createMongoClient(ctx context.Context) (*mongo.Client, error) {
-	clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
+	clientOptions := options.Client().ApplyURI(env.Datasources.MongoDB.Uri)
 	client, err := mongo.Connect(ctx, clientOptions)
 	if err != nil {
 		panic("could not connect to mongodb instance: " + err.Error())
@@ -75,8 +75,8 @@ func createNeo4jClient(ctx context.Context) (*neo4j.SessionWithContext, error) {
 func main() {
 	setUpEnvironment()
 
-	port := ":3000"
-	listen, err := net.Listen("tcp", port)
+	port := "3000"
+	listen, err := net.Listen("tcp", ":"+port)
 	if err != nil {
 		log.Fatalf("failed to listen on port %v", port)
 		return
@@ -97,10 +97,11 @@ func main() {
 	// Defer closing the Neo4j session when the program finishes
 
 	instance := grpc.NewServer()
-	service := &handlers.AuthService{
+	service := &implementation.AuthService{
 		DocumentDB: mongoClient,
 		GraphDB:    neoClient,
 		Ctx:        ctx,
+		Env:        env,
 	}
 
 	protos.RegisterAuthServiceServer(instance, service)

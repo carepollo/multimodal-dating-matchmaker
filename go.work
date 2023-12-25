@@ -2,7 +2,6 @@ go 1.21.5
 
 use (
 	./auth
+	./notifications
 	./protos
-    ./notifications
-    ./frontend
 )

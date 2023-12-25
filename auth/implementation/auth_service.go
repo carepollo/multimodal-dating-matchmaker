@@ -1,7 +1,8 @@
-package handlers
+package implementation
 
 import (
 	"context"
+	"github.com/carepollo/multimodal-dating-matchmaker/auth/models"
 	"log"
 
 	"github.com/carepollo/multimodal-dating-matchmaker/protos"
@@ -13,11 +14,12 @@ type AuthService struct {
 	protos.UnimplementedAuthServiceServer
 
 	Ctx        context.Context
+	Env        models.Environment
 	GraphDB    *neo4j.SessionWithContext
 	DocumentDB *mongo.Client
 }
 
-// they did it with a fucking interface instead of a struct, therefore I cannot access it with pointers
+// GetGraphDB they did it with a fucking interface instead of a struct, therefore I cannot access it with pointers
 func (s *AuthService) GetGraphDB() neo4j.SessionWithContext {
 	return *s.GraphDB
 }
