@@ -3,13 +3,13 @@ package implementation
 import (
 	"context"
 	"errors"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
 	"log"
 
 	"github.com/carepollo/multimodal-dating-matchmaker/auth/helpers"
 	"github.com/carepollo/multimodal-dating-matchmaker/protos"
 	"github.com/google/uuid"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 func (s *AuthService) Register(ctx context.Context, req *protos.RegisterRequest) (*protos.RegisterResponse, error) {
@@ -30,7 +30,7 @@ func (s *AuthService) Register(ctx context.Context, req *protos.RegisterRequest)
 	}
 
 	data := map[string]any{
-		"id":       uuid.New().String(),
+		"_id":      uuid.New().String(),
 		"email":    req.Email,
 		"password": hashedPassword,
 		"age":      18,
@@ -51,9 +51,10 @@ func (s *AuthService) Register(ctx context.Context, req *protos.RegisterRequest)
 	}
 	defer targetConn.Close()
 
+	message := "confirm your account by clicking this <a href='https://google.com'>url</a>"
 	notificationsClient := protos.NewNotificationsServiceClient(targetConn)
 	_, err = notificationsClient.NotifyByEmail(ctx, &protos.NotifyEmailRequest{
-		Message: "confirm your account by clicking this <a href='https://google.com'>url</a>",
+		Message: message,
 		To:      []string{req.Email},
 		Topic:   "Account verification",
 	})

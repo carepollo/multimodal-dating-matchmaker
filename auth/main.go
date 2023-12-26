@@ -19,9 +19,8 @@ import (
 	"google.golang.org/grpc"
 )
 
-var env = models.Environment{}
-
 func setUpEnvironment() models.Environment {
+	env := models.Environment{}
 	vp := viper.New()
 	vp.SetConfigName("env")
 	vp.SetConfigType("json")
@@ -37,7 +36,7 @@ func setUpEnvironment() models.Environment {
 	return env
 }
 
-func createMongoClient(ctx context.Context) (*mongo.Client, error) {
+func createMongoClient(ctx context.Context, env models.Environment) (*mongo.Client, error) {
 	clientOptions := options.Client().ApplyURI(env.Datasources.MongoDB.Uri)
 	client, err := mongo.Connect(ctx, clientOptions)
 	if err != nil {
@@ -53,7 +52,7 @@ func createMongoClient(ctx context.Context) (*mongo.Client, error) {
 	return client, nil
 }
 
-func createNeo4jClient(ctx context.Context) (*neo4j.SessionWithContext, error) {
+func createNeo4jClient(ctx context.Context, env models.Environment) (*neo4j.SessionWithContext, error) {
 	uri := env.Datasources.Neo4j.Uri
 	username := env.Datasources.Neo4j.Username
 	password := env.Datasources.Neo4j.Password
@@ -73,7 +72,7 @@ func createNeo4jClient(ctx context.Context) (*neo4j.SessionWithContext, error) {
 }
 
 func main() {
-	setUpEnvironment()
+	env := setUpEnvironment()
 
 	port := "3000"
 	listen, err := net.Listen("tcp", ":"+port)
@@ -84,17 +83,17 @@ func main() {
 
 	ctx := context.TODO()
 
-	mongoClient, err := createMongoClient(ctx)
+	mongoClient, err := createMongoClient(ctx, env)
 	if err != nil {
 		panic("couldn't connect to mongo database: " + err.Error())
 	}
 
-	neoClient, err := createNeo4jClient(ctx)
+	neoClient, err := createNeo4jClient(ctx, env)
 	if err != nil {
 		panic("couldn't connect to critical dgraph database: " + err.Error())
 	}
 
-	// Defer closing the Neo4j session when the program finishes
+	// TODO: Defer closing the Neo4j session when the program finishes
 
 	instance := grpc.NewServer()
 	service := &implementation.AuthService{

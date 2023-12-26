@@ -8,20 +8,20 @@ import (
 )
 
 func CreateUser(ctx context.Context, client neo4j.SessionWithContext, data map[string]any) error {
-
-	registration, err := client.ExecuteWrite(ctx, func(tx neo4j.ManagedTransaction) (any, error) {
+	registered, err := client.ExecuteWrite(ctx, func(tx neo4j.ManagedTransaction) (any, error) {
 		result, err := tx.Run(ctx, `CREATE (:User {
 			email: $email,
 			password: $password,
 			age: $age,
 			status: $status,
-			id: $id
+			_id: $_id
 		  });`, data)
 
 		if err != nil {
 			return nil, err
 		}
 
+		// successful
 		if result.Next(ctx) {
 			return result.Record().Values[0], nil
 		}
@@ -33,6 +33,6 @@ func CreateUser(ctx context.Context, client neo4j.SessionWithContext, data map[s
 		return err
 	}
 
-	log.Println("user created: ", registration.(string))
+	log.Printf("user created successfully: %v\n", registered)
 	return nil
 }
