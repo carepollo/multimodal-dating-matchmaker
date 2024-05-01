@@ -18,4 +18,5 @@ type Environment struct {
 	Services struct {
 		Notifications string `mapstructure:"notifications"` // address of the service
 	} `mapstructure:"services"`
+	JwtSecret string `mapstructure:"jwt-secret"`
 }

@@ -2,17 +2,28 @@ package implementation
 
 import (
 	"context"
-	"fmt"
 
+	"github.com/carepollo/multimodal-dating-matchmaker/auth/helpers"
 	"github.com/carepollo/multimodal-dating-matchmaker/protos"
 )
 
 func (s *AuthService) Login(ctx context.Context, req *protos.LoginRequest) (*protos.LoginResponse, error) {
 	res := &protos.LoginResponse{
-		Userid: "",
-		Token:  "",
+		Userid: req.Email,
+		Token:  req.Password,
 	}
 
-	fmt.Printf("login")
+	user, err := helpers.GetUserByEmailAndPassword(ctx, *s.GraphDB, req.Email, req.Password)
+	if err != nil {
+		return nil, err
+	}
+
+	token, err := helpers.GenerateToken(user.Id, s.Env.JwtSecret)
+	if err != nil {
+		return nil, err
+	}
+
+	res.Token = token
+	res.Userid = user.Id
 	return res, nil
 }

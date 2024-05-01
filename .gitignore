@@ -1,5 +1,12 @@
-*/env.json
-.idea
+# air
 .air.toml
+*/tmp
 /tmp
+
+# env files
+*/env.json
 */.env
+
+# IDEs files
+.idea
+.vscode

@@ -8,8 +8,6 @@ import (
 	"github.com/carepollo/multimodal-dating-matchmaker/auth/helpers"
 	"github.com/carepollo/multimodal-dating-matchmaker/protos"
 	"github.com/google/uuid"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
 )
 
 func (s *AuthService) Register(ctx context.Context, req *protos.RegisterRequest) (*protos.RegisterResponse, error) {
@@ -41,25 +39,6 @@ func (s *AuthService) Register(ctx context.Context, req *protos.RegisterRequest)
 	// create user in db
 	if err := helpers.CreateUser(s.Ctx, s.GetGraphDB(), data); err != nil {
 		return &protos.RegisterResponse{}, errors.New("could not create user on db: " + err.Error())
-	}
-
-	// send confirmation email
-	targetConn, err := grpc.Dial(s.Env.Services.Notifications, grpc.WithTransportCredentials(insecure.NewCredentials()))
-	if err != nil {
-		log.Fatalf("Failed to dial notifications service %v", err)
-		return &protos.RegisterResponse{}, err
-	}
-	defer targetConn.Close()
-
-	message := "confirm your account by clicking this <a href='https://google.com'>url</a>"
-	notificationsClient := protos.NewNotificationsServiceClient(targetConn)
-	_, err = notificationsClient.NotifyByEmail(ctx, &protos.NotifyEmailRequest{
-		Message: message,
-		To:      []string{req.Email},
-		Topic:   "Account verification",
-	})
-	if err != nil {
-		return &protos.RegisterResponse{}, err
 	}
 
 	log.Println("register response outbound", data)

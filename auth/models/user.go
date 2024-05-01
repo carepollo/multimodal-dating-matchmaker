@@ -1,6 +1,15 @@
 package models
 
-import "time"
+import (
+	"time"
+
+	"github.com/dgrijalva/jwt-go"
+)
+
+type LoggedInClient struct {
+	UserId string
+	jwt.StandardClaims
+}
 
 // Gender represents the Gender message.
 type Gender struct {
